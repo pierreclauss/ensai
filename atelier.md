@@ -197,37 +197,39 @@ proches et s’opposent à *unsecured*.
 ## 2 Modélisation
 
 Pour choisir le bon type de modélisation, il faut tout d’abord savoir si
-l’apprentissage est supervisé ou non. Dans ce dernier cas, les données
-ne sont pas labelisées et des méthodes de partitionnement ou clustering
-(**k-means** par exemple) et de réduction de dimension (**ACM** par
-exemple comme précédemment) peuvent être utilisées. Ici, les données
-sont labélisées par la valeur de LGD. L’apprentissage est donc
-supervisé. Reste à savoir si la famille de modèles est celle de la
-régression (variable à expliquer quantitative) ou celle de la
-classification (variable qualitative). La LGD ayant des valeurs
-quantitatives sur le support \[0,1\], nous pouvons pertinemment utiliser
-des méthodes de régression.
+l’apprentissage est supervisé ou non. Dans le cas non supervisé, les
+données ne sont pas labelisées et des méthodes de partitionnement ou
+clustering (**k-means** par exemple) et de réduction de dimension
+(**ACM** par exemple comme précédemment) peuvent être utilisées. Ici,
+les données sont labélisées par la valeur de LGD. L’apprentissage est
+donc supervisé. Reste à savoir si la famille de modèles est celle de la
+**régression** (variable à expliquer quantitative) ou celle de la
+**classification** (variable à expliquer qualitative). La LGD ayant des
+valeurs quantitatives sur le support \[0,1\], nous pouvons pertinemment
+utiliser des méthodes de régression.
 
-Pour une illustration de ces choix, voici l’excellente [illustration de
-**scikit-learn**](http://scikit-learn.org/stable/tutorial/machine_learning_map/index.html)
+Pour une illustration de ces choix, voici celle excellente proposée par
+[**scikit-learn**](http://scikit-learn.org/stable/tutorial/machine_learning_map/index.html)
 
-L’objectif est donc de trouver un modèle qui permette de prédire la
-valeur de LGD à partir de ses principaux features ou *risk drivers*.
+L’objectif est donc de trouver un modèle de régression qui permette de
+prédire la valeur de LGD à partir de ses principaux features ou *risk
+drivers*.
 
-3 étapes peuvent être définies pour la modélisation :
+3 étapes sont définies pour la modélisation :
 
 1.  séparation de l’échantillon en échantillon d’apprentissage et
     échantillon de test (75/25 classiquement)
 2.  ajustement du modèle sur l’échantillon d’apprentissage suivant
-    plusieurs méthodes possibles (régression linéaire, régularisée,
-    arbre de décision, méthode ensembliste bagging ou boosting, etc.)
+    plusieurs méthodes possibles dans le cadre de la régression :
+    régression linéaire, régularisée, arbre de décision, méthode
+    ensembliste bagging ou boosting, etc.
 3.  évaluation de la performance de la prédiction du modèle sur
     l’échantillon de test. Elle dépend du type de prédiction réalisée
     : soit une classe pour la classification, soit une valeur
     quantitative pour la régression. Pour la première, la matrice de
     confusion permet d’évaluer la performance de l’ajustement du modèle.
     Concernant la prédiction d’une valeur quantitative, le critère
-    classique de *R²* permet d’en évaluer la performance.
+    classique du *R²* permet d’en évaluer la performance.
 
 ### 2.1 Quelques évaluations d’algorithmes sous Python
 
@@ -239,8 +241,9 @@ qualitatives en variables quantitatives pour pouvoir les utiliser dans
 une modèle (contrairement à R).
 
 Ces évaluations ne sont pas abouties puisque le *tuning* des
-hyper-paramètres n’est pas réalisé. L’objectif est de faire un premier
-pas dans la modélisation et la prédiction de la LGD.
+hyper-paramètres n’est pas réalisé et les hypothèses des modèles ne
+sont pas vérifiées. L’objectif est de faire un premier pas dans la
+modélisation et la prédiction de la LGD.
 
 Nous pouvons observer la faiblesse de la performance des modèles : nous
 y reviendrons lors de la conclusion.
@@ -307,7 +310,7 @@ rf = RandomForestRegressor().fit(X_train, y_train)
 print("R2 random forest: {:.4f}".format(rf.score(X_test, y_test)))
 ```
 
-    ## R2 random forest: 0.0397
+    ## R2 random forest: 0.0396
 
 ``` python
 from sklearn.ensemble import GradientBoostingRegressor
@@ -320,9 +323,12 @@ print("R2 gradient boosting: {:.4f}".format(gb.score(X_test, y_test)))
 ### 2.2 Quelques évaluations d’algorithmes sous R
 
 Sous R, le package **caret** me semble le plus complet car il appelle de
-nombreux autres packages et propose ainsi dans sa fonction **train** de
+nombreux autres packages et propose avec sa fonction **train** de
 [nombreux types de
-modèles](http://topepo.github.io/caret/available-models.html).
+modèles](http://topepo.github.io/caret/available-models.html). Je
+précise que contrairement à Python, si la variable est de type
+*character* ou *logical*, R la transforme automatiquement en type
+*factor* pour l’estimation.
 
 ``` r
 library(caret)
@@ -460,9 +466,3 @@ text(arbre, use.n = T, fancy = T, all = T, pretty = 0, cex = 0.6)
 ```
 
 ![](atelier_files/figure-gfm/arbre-1.png)<!-- -->
-
-Pour aller plus loin, je conseille la lecture du papier de [Hurlin,
-Leymarie, Patin
-(2018)](https://halshs.archives-ouvertes.fr/halshs-01516147v3/document)
-qui compare 6 modèles en les évaluant à l’aide d’une méthode
-alternative.
