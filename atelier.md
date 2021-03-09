@@ -1,7 +1,7 @@
 Atelier de modélisation de la LGD des actifs sains des entreprises
 ================
 Pierre Clauss
-Janvier 2020
+Mars 2021
 
 ## Préambule
 
@@ -118,8 +118,8 @@ lgd %>%
     ## # A tibble: 2 x 6
     ##   Seniorite number  mean median      min   max
     ##   <chr>      <int> <dbl>  <dbl>    <dbl> <dbl>
-    ## 1 Senior      2950 0.280 0.0497 3.80e-36 1.000
-    ## 2 Sub           50 0.686 0.767  8.67e- 4 1.000
+    ## 1 Senior      2950 0.280 0.0497 3.80e-36  1.00
+    ## 2 Sub           50 0.686 0.767  8.67e- 4  1.00
 
 ``` r
 lgd %>%
@@ -136,10 +136,10 @@ lgd %>%
     ## # A tibble: 4 x 6
     ##   Taille number  mean  median      min   max
     ##   <chr>   <int> <dbl>   <dbl>    <dbl> <dbl>
-    ## 1 ETI       500 0.341 0.138   1.22e-19 1.000
-    ## 2 GE        300 0.408 0.250   1.63e-24 1.000
-    ## 3 PME      2100 0.262 0.0355  3.80e-36 1.000
-    ## 4 TGE       100 0.180 0.00406 1.34e-18 1.000
+    ## 1 ETI       500 0.341 0.138   1.22e-19  1.00
+    ## 2 GE        300 0.408 0.250   1.63e-24  1.00
+    ## 3 PME      2100 0.262 0.0355  3.80e-36  1.00
+    ## 4 TGE       100 0.180 0.00406 1.34e-18  1.00
 
 ``` r
 ggplot(
@@ -275,7 +275,7 @@ lr = LinearRegression().fit(X_train, y_train)
 print("R2 linear model: {:.4f}".format(lr.score(X_test, y_test)))
 ```
 
-    ## R2 linear model: 0.0402
+    ## R2 linear model: 0.0401
 
 ``` python
 from sklearn.linear_model import Ridge
@@ -307,7 +307,7 @@ rf = RandomForestRegressor().fit(X_train, y_train)
 print("R2 random forest: {:.4f}".format(rf.score(X_test, y_test)))
 ```
 
-    ## R2 random forest: 0.0409
+    ## R2 random forest: 0.0397
 
 ``` python
 from sklearn.ensemble import GradientBoostingRegressor
@@ -384,7 +384,7 @@ postResample(pred = rf_pred, obs = sample_test$LGD)["Rsquared"]
     ## 0.03437469
 
 ``` r
-xgboost_fit = train(LGD ~ ., data = sample_train, method = "xgbLinear")
+xgboost_fit = train(LGD ~ ., data = sample_train, method = "xgbLinear", objective = "reg:squarederror")
 xgboost_pred <- predict(lm_fit, sample_test)
 postResample(pred = xgboost_pred, obs = sample_test$LGD)["Rsquared"]
 ```
@@ -394,10 +394,11 @@ postResample(pred = xgboost_pred, obs = sample_test$LGD)["Rsquared"]
 
 ### 2.3 Quelques évaluations d’algorithmes dans un environnement big data avec Apache Spark sous R
 
-Avec le package R [**sparklyr**](https://spark.rstudio.com/mlib/), il
-est possible d’utiliser la librairie de fonctions de machine learning
-*MLlib*. Cet exercice est purement pédagogique étant donné que les
-données à notre disposition ne sont pas de grande dimension.
+Avec le package R [**sparklyr**](https://therinspark.com/starting.html),
+il est possible d’utiliser la librairie de fonctions de machine learning
+[**MLlib**](https://spark.rstudio.com/mlib/). Cet exercice est purement
+pédagogique étant donné que les données à notre disposition ne sont pas
+de grande dimension.
 
 ``` r
 library(sparklyr)
