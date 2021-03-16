@@ -209,7 +209,7 @@ valeurs quantitatives sur le support \[0,1\], nous pouvons pertinemment
 utiliser des méthodes de régression.
 
 Pour une illustration de ces choix, voici celle excellente proposée par
-[**scikit-learn**](http://scikit-learn.org/stable/tutorial/machine_learning_map/index.html)
+[**scikit-learn**](http://scikit-learn.org/stable/tutorial/machine_learning_map/index.html).
 
 L’objectif est donc de trouver un modèle de régression qui permette de
 prédire la valeur de LGD à partir de ses principaux features ou *risk
@@ -231,14 +231,90 @@ drivers*.
     Concernant la prédiction d’une valeur quantitative, le critère
     classique du *R²* permet d’en évaluer la performance.
 
-### 2.1 Quelques évaluations d’algorithmes sous Python
+### 2.1 Quelques évaluations d’algorithmes sous R
+
+Sous R, le package **caret** me semble le plus complet car il appelle de
+nombreux autres packages et propose avec sa fonction **train** de
+[nombreux types de
+modèles](http://topepo.github.io/caret/available-models.html). Je
+précise que contrairement à Python (voir plus bas), si la variable est
+de type *character* ou *logical*, R la transforme automatiquement en
+type *factor* pour l’estimation.
+
+``` r
+library(caret)
+set.seed(123)
+sample_train <- lgd %>% sample_frac(0.75)
+sample_test <- anti_join(lgd, sample_train)
+
+knn_fit = train(LGD ~ ., data = sample_train, method = "knn")
+knn_pred <- predict(knn_fit, sample_test)
+postResample(pred = knn_pred, obs = sample_test$LGD)["Rsquared"]
+```
+
+    ##   Rsquared 
+    ## 0.03402572
+
+``` r
+lm_fit = train(LGD ~ ., data = sample_train, method = "lm")
+lm_pred <- predict(lm_fit, sample_test)
+postResample(pred = lm_pred, obs = sample_test$LGD)["Rsquared"]
+```
+
+    ##  Rsquared 
+    ## 0.0345636
+
+``` r
+ridge_fit = train(LGD ~ ., data = sample_train, method = "ridge")
+ridge_pred <- predict(ridge_fit, sample_test)
+postResample(pred = ridge_pred, obs = sample_test$LGD)["Rsquared"]
+```
+
+    ##   Rsquared 
+    ## 0.03391932
+
+``` r
+lasso_fit = train(LGD ~ ., data = sample_train, method = "lasso")
+lasso_pred <- predict(lasso_fit, sample_test)
+postResample(pred = lasso_pred, obs = sample_test$LGD)["Rsquared"]
+```
+
+    ##   Rsquared 
+    ## 0.03347767
+
+``` r
+tree_fit = train(LGD ~ ., data = sample_train, method = "rpart")
+tree_pred <- predict(tree_fit, sample_test)
+postResample(pred = tree_pred, obs = sample_test$LGD)["Rsquared"]
+```
+
+    ##   Rsquared 
+    ## 0.02936675
+
+``` r
+rf_fit = train(LGD ~ ., data = sample_train, method = "rf")
+rf_pred <- predict(rf_fit, sample_test)
+postResample(pred = rf_pred, obs = sample_test$LGD)["Rsquared"]
+```
+
+    ##   Rsquared 
+    ## 0.03437469
+
+``` r
+xgboost_fit = train(LGD ~ ., data = sample_train, method = "xgbLinear", objective = "reg:squarederror")
+xgboost_pred <- predict(lm_fit, sample_test)
+postResample(pred = xgboost_pred, obs = sample_test$LGD)["Rsquared"]
+```
+
+    ##  Rsquared 
+    ## 0.0345636
+
+### 2.2 Quelques évaluations d’algorithmes sous Python
 
 A partir du package **scikit-learn**, nous testons quelques modèles de
-régression.
-
-Précisons que nous avons besoin en Python d’encoder les variables
-qualitatives en variables quantitatives pour pouvoir les utiliser dans
-une modèle (contrairement à R).
+régression. Précisons que nous avons besoin en Python d’encoder les
+variables qualitatives en variables quantitatives pour pouvoir les
+utiliser dans un modèle (contrairement à R).
 
 Ces évaluations ne sont pas abouties puisque le *tuning* des
 hyper-paramètres n’est pas réalisé et les hypothèses des modèles ne
@@ -310,7 +386,7 @@ rf = RandomForestRegressor().fit(X_train, y_train)
 print("R2 random forest: {:.4f}".format(rf.score(X_test, y_test)))
 ```
 
-    ## R2 random forest: 0.0396
+    ## R2 random forest: 0.0398
 
 ``` python
 from sklearn.ensemble import GradientBoostingRegressor
@@ -319,84 +395,6 @@ print("R2 gradient boosting: {:.4f}".format(gb.score(X_test, y_test)))
 ```
 
     ## R2 gradient boosting: 0.0397
-
-### 2.2 Quelques évaluations d’algorithmes sous R
-
-Sous R, le package **caret** me semble le plus complet car il appelle de
-nombreux autres packages et propose avec sa fonction **train** de
-[nombreux types de
-modèles](http://topepo.github.io/caret/available-models.html). Je
-précise que contrairement à Python, si la variable est de type
-*character* ou *logical*, R la transforme automatiquement en type
-*factor* pour l’estimation.
-
-``` r
-library(caret)
-set.seed(123)
-sample_train <- lgd %>% sample_frac(0.75)
-sample_test <- anti_join(lgd, sample_train)
-
-knn_fit = train(LGD ~ ., data = sample_train, method = "knn")
-knn_pred <- predict(knn_fit, sample_test)
-postResample(pred = knn_pred, obs = sample_test$LGD)["Rsquared"]
-```
-
-    ##   Rsquared 
-    ## 0.03402572
-
-``` r
-lm_fit = train(LGD ~ ., data = sample_train, method = "lm")
-lm_pred <- predict(lm_fit, sample_test)
-postResample(pred = lm_pred, obs = sample_test$LGD)["Rsquared"]
-```
-
-    ##  Rsquared 
-    ## 0.0345636
-
-``` r
-ridge_fit = train(LGD ~ ., data = sample_train, method = "ridge")
-ridge_pred <- predict(ridge_fit, sample_test)
-postResample(pred = ridge_pred, obs = sample_test$LGD)["Rsquared"]
-```
-
-    ##   Rsquared 
-    ## 0.03391932
-
-``` r
-lasso_fit = train(LGD ~ ., data = sample_train, method = "lasso")
-lasso_pred <- predict(lasso_fit, sample_test)
-postResample(pred = lasso_pred, obs = sample_test$LGD)["Rsquared"]
-```
-
-    ##   Rsquared 
-    ## 0.03347767
-
-``` r
-tree_fit = train(LGD ~ ., data = sample_train, method = "rpart")
-tree_pred <- predict(tree_fit, sample_test)
-postResample(pred = tree_pred, obs = sample_test$LGD)["Rsquared"]
-```
-
-    ##   Rsquared 
-    ## 0.02936675
-
-``` r
-rf_fit = train(LGD ~ ., data = sample_train, method = "rf")
-rf_pred <- predict(rf_fit, sample_test)
-postResample(pred = rf_pred, obs = sample_test$LGD)["Rsquared"]
-```
-
-    ##   Rsquared 
-    ## 0.03437469
-
-``` r
-xgboost_fit = train(LGD ~ ., data = sample_train, method = "xgbLinear", objective = "reg:squarederror")
-xgboost_pred <- predict(lm_fit, sample_test)
-postResample(pred = xgboost_pred, obs = sample_test$LGD)["Rsquared"]
-```
-
-    ##  Rsquared 
-    ## 0.0345636
 
 ### 2.3 Quelques évaluations d’algorithmes dans un environnement big data avec Apache Spark sous R
 
