@@ -163,15 +163,15 @@ pertinente (ANCOVA).
 
 Nous allons donc faire 3 modèles :
 
-1.  un modèle complet avec pentes et ordonnées à l’origine différentes
-    suivant le type de collatéral **mod.complet**,
+1.  un modèle complet **mod.complet** avec pentes et ordonnées à
+    l’origine différentes suivant le type de collatéral,
 
-2.  un modèle avec pentes communes relativement au chiffre d’affaires et
-    ordonnées à l’origine différentes suivant le type de collatéral
-    **mod.pente**,
+2.  un modèle **mod.pente** avec pentes communes relativement au chiffre
+    d’affaires et ordonnées à l’origine différentes suivant le type de
+    collatéral,
 
-3.  un modèle avec ordonnées à l’origine communes et pentes relatives au
-    CA différentes suivant le collatéral *mod.ordonnee*.
+3.  un modèle **mod.ordonnee** avec ordonnées à l’origine communes et
+    pentes relatives au CA différentes suivant le collatéral.
 
 Puis nous faisons des tests d’égalité des pentes et d’égalite des
 ordonnées à l’origine pour choisir le modèle le plus pertinent à l’aide
@@ -339,7 +339,7 @@ print(mod.summary())
     ## Model:                             OLS   Adj. R-squared (uncentered):              0.375
     ## Method:                  Least Squares   F-statistic:                              406.2
     ## Date:              jeu., 11 janv. 2024   Prob (F-statistic):                   3.79e-274
-    ## Time:                         20:18:09   Log-Likelihood:                         -1190.9
+    ## Time:                         20:22:44   Log-Likelihood:                         -1190.9
     ## No. Observations:                 2700   AIC:                                      2390.
     ## Df Residuals:                     2696   BIC:                                      2413.
     ## Df Model:                            4                                                  
