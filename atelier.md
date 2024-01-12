@@ -173,17 +173,27 @@ Nous allons donc faire 3 modèles :
 3.  un modèle **mod.ordonnee** avec ordonnées à l’origine communes et
     pentes relatives au CA différentes suivant le collatéral.
 
-Puis nous faisons des tests d’égalité des pentes et d’égalite des
+Puis nous faisons des tests d’égalité des pentes et d’égalité des
 ordonnées à l’origine pour choisir le modèle le plus pertinent à l’aide
 de la fonction **anova**.
 
-Au vu des résultats de ces tests, On accepte l’égalité des pentes. Il
-n’y a donc pas d’effet du collatéral sur les pentes et on choisit le
-modèle **mod.pente** (nous pouvions l’observer avec le nuage de points).
+Au vu des résultats de ces tests, on accepte l’égalité des pentes avec
+des ordonnées à l’origine différentes. On choisirait le modèle
+**mod.pente**.
 
-On rejette aussi l’égalité des ordonnées à l’origine, confirmant l’effet
-du collatéral sur les ordonnées à l’origine (anticipé avec les
-boxplots).
+Mais on accepte aussi l’égalité des ordonnées à l’origine avec des
+pentes différentes. On choisirait le modèle **mod.ordonnee**.
+
+Ces 2 modèles ne sont pas emboîtés mais en étudiant les résultats des
+coefficients estimés ainsi que des graphiques de la data viz (boxplot
+entre autres qui montrent un effet collatéral sur le niveau de LGD),
+nous penchons pour le modèle avec pente unique et ordonnées à l’origine
+différentes.
+
+Ceci est confirmé par le dernier résultat ci-dessous qui compare ce
+modèle finalement choisi avec un modèle simple sans aucun effet du
+collaréral (modèle expliquant la LGD par le CA). Et nous rejettons alors
+l’égalité des ordonnées à l’origine, confirmant notre choix.
 
 ``` r
 mod.complet = lm(LGD ~ Collateral + Collateral:CA - 1, data = lgd)
@@ -243,30 +253,31 @@ summary(mod.pente)
     ## F-statistic: 346.6 on 5 and 2695 DF,  p-value: < 2.2e-16
 
 ``` r
-mod.ordonnee = lm(LGD ~ Collateral:CA - 1, data = lgd)
+mod.ordonnee = lm(LGD ~ Collateral:CA, data = lgd)
 summary(mod.ordonnee)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = LGD ~ Collateral:CA - 1, data = lgd)
+    ## lm(formula = LGD ~ Collateral:CA, data = lgd)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -0.9975 -0.2100 -0.1075  0.3877  0.9465 
+    ## -0.3511 -0.2905 -0.2091  0.3018  0.8136 
     ## 
     ## Coefficients:
-    ##                                 Estimate Std. Error t value Pr(>|t|)    
-    ## CollateralSecured cautions:CA  2.811e-03  4.008e-04   7.014 2.93e-12 ***
-    ## CollateralSecured escompte:CA  2.266e-03  1.778e-04  12.744  < 2e-16 ***
-    ## CollateralSecured tangibles:CA 2.248e-03  1.792e-04  12.546  < 2e-16 ***
-    ## CollateralUnsecured:CA         1.344e-03  5.329e-05  25.219  < 2e-16 ***
+    ##                                  Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                     3.608e-01  1.568e-02  23.006  < 2e-16 ***
+    ## CollateralSecured cautions:CA  -6.828e-04  3.967e-04  -1.721   0.0854 .  
+    ## CollateralSecured escompte:CA  -1.199e-03  2.216e-04  -5.410 6.84e-08 ***
+    ## CollateralSecured tangibles:CA -1.235e-03  2.231e-04  -5.535 3.42e-08 ***
+    ## CollateralUnsecured:CA         -2.087e-04  8.323e-05  -2.507   0.0122 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.4067 on 2696 degrees of freedom
-    ## Multiple R-squared:  0.2715, Adjusted R-squared:  0.2705 
-    ## F-statistic: 251.2 on 4 and 2696 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 0.3719 on 2695 degrees of freedom
+    ## Multiple R-squared:  0.0166, Adjusted R-squared:  0.01514 
+    ## F-statistic: 11.37 on 4 and 2695 DF,  p-value: 3.753e-09
 
 ``` r
 # Test égalité des pentes
@@ -289,10 +300,47 @@ anova(mod.complet, mod.ordonnee)
     ## Analysis of Variance Table
     ## 
     ## Model 1: LGD ~ Collateral + Collateral:CA - 1
-    ## Model 2: LGD ~ Collateral:CA - 1
-    ##   Res.Df   RSS Df Sum of Sq      F    Pr(>F)    
-    ## 1   2692 372.5                                  
-    ## 2   2696 445.9 -4     -73.4 132.61 < 2.2e-16 ***
+    ## Model 2: LGD ~ Collateral:CA
+    ##   Res.Df   RSS Df Sum of Sq      F Pr(>F)
+    ## 1   2692 372.5                           
+    ## 2   2695 372.7 -3  -0.20112 0.4845 0.6931
+
+``` r
+#Test avec un modèle sans effet collatéral
+mod.simple <- lm(LGD ~ CA, data = lgd)
+summary(mod.simple)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = LGD ~ CA, data = lgd)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -0.2993 -0.2932 -0.2358  0.3086  0.7360 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  3.022e-01  1.298e-02  23.284   <2e-16 ***
+    ## CA          -6.287e-05  8.081e-05  -0.778    0.437    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.3748 on 2698 degrees of freedom
+    ## Multiple R-squared:  0.0002243,  Adjusted R-squared:  -0.0001463 
+    ## F-statistic: 0.6052 on 1 and 2698 DF,  p-value: 0.4367
+
+``` r
+anova(mod.pente, mod.simple)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Model 1: LGD ~ Collateral + CA - 1
+    ## Model 2: LGD ~ CA
+    ##   Res.Df    RSS Df Sum of Sq      F    Pr(>F)    
+    ## 1   2695 372.55                                  
+    ## 2   2698 378.91 -3   -6.3555 15.325 6.912e-10 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -338,8 +386,8 @@ print(mod.summary())
     ## Dep. Variable:                     LGD   R-squared (uncentered):                   0.376
     ## Model:                             OLS   Adj. R-squared (uncentered):              0.375
     ## Method:                  Least Squares   F-statistic:                              406.2
-    ## Date:              jeu., 11 janv. 2024   Prob (F-statistic):                   3.79e-274
-    ## Time:                         20:22:44   Log-Likelihood:                         -1190.9
+    ## Date:              ven., 12 janv. 2024   Prob (F-statistic):                   3.79e-274
+    ## Time:                         12:17:40   Log-Likelihood:                         -1190.9
     ## No. Observations:                 2700   AIC:                                      2390.
     ## Df Residuals:                     2696   BIC:                                      2413.
     ## Df Model:                            4                                                  
