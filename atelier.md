@@ -2,7 +2,6 @@ Atelier d’introduction à la modélisation de la LGD des actifs sains des
 entreprises
 ================
 Pierre Clauss
-Janvier 2024
 
 ## Préambule
 
@@ -386,8 +385,8 @@ print(mod.summary())
     ## Dep. Variable:                     LGD   R-squared (uncentered):                   0.376
     ## Model:                             OLS   Adj. R-squared (uncentered):              0.375
     ## Method:                  Least Squares   F-statistic:                              406.2
-    ## Date:              ven., 12 janv. 2024   Prob (F-statistic):                   3.79e-274
-    ## Time:                         12:17:40   Log-Likelihood:                         -1190.9
+    ## Date:              mar., 28 janv. 2025   Prob (F-statistic):                   3.79e-274
+    ## Time:                         12:24:07   Log-Likelihood:                         -1190.9
     ## No. Observations:                 2700   AIC:                                      2390.
     ## Df Residuals:                     2696   BIC:                                      2413.
     ## Df Model:                            4                                                  
